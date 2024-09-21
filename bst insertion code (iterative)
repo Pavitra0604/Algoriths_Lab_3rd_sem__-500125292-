@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+};
+
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+
+struct Node* insert(struct Node* root, int data) {
+    struct Node* newNode = createNode(data);
+
+    if (root == NULL) {
+        return newNode;
+    }
+    
+    struct Node* current = root;
+    struct Node* parent = NULL;
+   
+    while (current != NULL) {
+        parent = current;
+        if (data < current->data) {
+            current = current->left;
+        } else if (data > current->data) {
+            current = current->right;
+        } else {
+          
+            free(newNode); 
+            return root;
+        }
+    }   
+ 
+   if (data < parent->data) {
+        parent->left = newNode;
+    } else {
+        parent->right = newNode;
+    }
+    
+    return root;
+}
+
+void inorderTraversal(struct Node* root) {
+    if (root != NULL) {
+        inorderTraversal(root->left);
+        printf("%d ", root->data);
+        inorderTraversal(root->right);
+    }
+}
+
+int main() {
+    struct Node* root = NULL;
+
+    root = insert(root, 50);
+    insert(root, 30);
+    insert(root, 20);
+    insert(root, 40);
+    insert(root, 70);
+    insert(root, 60);
+    insert(root, 80);
+    
+    printf("In-order traversal of the BST: ");
+    inorderTraversal(root);
+    printf("\n");
+
+    return 0;
+}
