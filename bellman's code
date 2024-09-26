@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <limits.h>
+#include <stdlib.h>
 
 struct Edge {
     int src, dest, weight;
