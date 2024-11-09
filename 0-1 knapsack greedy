@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Item {
+    int weight;
+    int value;
+};
+
+int compare(const void *a, const void *b) {
+    struct Item *item1 = (struct Item *)a;
+    struct Item *item2 = (struct Item *)b;
+    double ratio1 = (double)item1->value / item1->weight;
+    double ratio2 = (double)item2->value / item2->weight;
+    return (ratio1 > ratio2) ? -1 : (ratio1 < ratio2);
+}
+
+
+double fractionalKnapsack(struct Item items[], int n, int capacity) {
+  
+    qsort(items, n, sizeof(struct Item), compare);
+
+    double maxValue = 0.0;
+
+    for (int i = 0; i < n; i++) {
+        if (capacity >= items[i].weight) {
+         capacity -= items[i].weight;
+            maxValue += items[i].value;
+        } else {
+           
+            maxValue += items[i].value * ((double)capacity / items[i].weight);
+            break;
+        }
+    }
+
+    return maxValue;
+}
+
+int main() {
+    struct Item items[] = { {10, 60}, {20, 100}, {30, 120} };
+    int n = sizeof(items) / sizeof(items[0]);
+    int capacity = 50;
+
+    printf("Maximum value in Knapsack = %.2f\n", fractionalKnapsack(items, n, capacity));
+
+    return 0;
+}
