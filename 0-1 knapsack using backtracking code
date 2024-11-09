@@ -1,0 +1,31 @@
+#include <stdio.h>
+
+int knapsackBacktracking(int W, int n, int weights[], int values[], int currentWeight, int currentValue) {
+  
+    if (n == 0) {
+        return currentValue;
+    }
+
+    if (currentWeight > W) {
+        return 0;
+    }
+
+    int exclude = knapsackBacktracking(W, n - 1, weights, values, currentWeight, currentValue);
+
+    int include = knapsackBacktracking(W, n - 1, weights, values, currentWeight + weights[n - 1], currentValue + values[n - 1]);
+
+    return (include > exclude) ? include : exclude;
+}
+
+int main() {
+    int weights[] = {10, 20, 30};  
+    int values[] = {60, 100, 120}; 
+    int W = 50;  // Capacity of the knapsack
+    int n = sizeof(weights) / sizeof(weights[0]);
+
+    int maxProfit = knapsackBacktracking(W, n, weights, values, 0, 0);
+
+    printf("Maximum profit in Knapsack = %d\n", maxProfit);
+
+    return 0;
+}
