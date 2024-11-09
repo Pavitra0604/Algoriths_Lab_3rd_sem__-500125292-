@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Item {
+    int weight;
+    int value;
+};
+
+    int level;     
+    int profit;    
+    int weight;     
+    float bound;   
+};
+
+float bound(struct Node u, int n, int W, struct Item items[]) {
+    if (u.weight >= W) return 0; 
+
+    float result = u.profit;
+    int totalWeight = u.weight;
+    int j = u.level + 1;
+
+    while (j < n && totalWeight + items[j].weight <= W) {
+        totalWeight += items[j].weight;
+        result += items[j].value;
+        j++;
+    }
+
+    if (j < n) {
+        result += (W - totalWeight) * (float)items[j].value / items[j].weight;
+    }
+
+    return result;
+}
+
+int cmp(const void *a, const void *b) {
+    struct Item *item1 = (struct Item *)a;
+    struct Item *item2 = (struct Item *)b;
+    double r1 = (double)item1->value / item1->weight;
+    double r2 = (double)item2->value / item2->weight;
+    return r2 - r1 > 0 ? 1 : -1;
+}
+
+int knapsackBranchAndBound(int W, struct Item items[], int n) {
+    qsort(items, n, sizeof(struct Item), cmp); 
+
+    struct Node u, v;  
+    int maxProfit = 0; 
+    u.level = -1;
+    u.profit = 0;
+    u.weight = 0;
+    u.bound = bound(u, n, W, items);
+
+    struct Node queue[1000]; 
+    int front = 0, rear = 0;
+    queue[rear++] = u;
+
+    while (front != rear) {
+        u = queue[front++];
+        if (u.level == n - 1) continue;  
+
+        v.level = u.level + 1;
+        v.weight = u.weight + items[v.level].weight;
+        v.profit = u.profit + items[v.level].value;
+
+        if (v.weight <= W && v.profit > maxProfit) {
+            maxProfit = v.profit; 
+        }
+
+        v.bound = bound(v, n, W, items);
+        if (v.bound > maxProfit) {
+            queue[rear++] = v;  
+        }
+
+        v.weight = u.weight;
+        v.profit = u.profit;
+        v.bound = bound(v, n, W, items);
+        if (v.bound > maxProfit) {
+            queue[rear++] = v;  
+        }
+    }
+
+    return maxProfit;
+}
+
+int main() {
+    struct Item items[] = {{10, 60}, {20, 100}, {30, 120}};
+    int W = 50;  
+    int n = sizeof(items) / sizeof(items[0]);
+
+    int maxProfit = knapsackBranchAndBound(W, items, n);
+    printf("Maximum profit in Knapsack = %d\n", maxProfit);
+
+    return 0;
+}
